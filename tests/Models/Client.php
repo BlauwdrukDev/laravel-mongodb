@@ -7,6 +7,9 @@ namespace MongoDB\Laravel\Tests\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+// use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use MongoDB\Laravel\Relations\MorphToMany;
+
 use MongoDB\Laravel\Eloquent\Model as Eloquent;
 
 class Client extends Eloquent
@@ -28,5 +31,12 @@ class Client extends Eloquent
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class, 'data.client_id', 'data.client_id');
+    }
+
+    // labels
+    public function labels()
+    {
+        return $this->morphToMany(Label::class, 'labelled');
+
     }
 }

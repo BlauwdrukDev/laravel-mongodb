@@ -1,6 +1,6 @@
 <?php
 
-namespace Illuminate\Database\Eloquent\Relations;
+namespace MongoDB\Laravel\Relations;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -8,28 +8,13 @@ use Illuminate\Support\Arr;
 
 class MorphToMany extends BelongsToMany
 {
-    /**
-     * The type of the polymorphic relation.
-     *
-     * @var string
-     */
+  
     protected $morphType;
 
-    /**
-     * The class name of the morph type constraint.
-     *
-     * @var string
-     */
     protected $morphClass;
 
-    /**
-     * Indicates if we are connecting the inverse of the relation.
-     *
-     * This primarily affects the morphClass constraint.
-     *
-     * @var bool
-     */
     protected $inverse;
+
 
     /**
      * Create a new morph to many relationship instance.
@@ -58,10 +43,13 @@ class MorphToMany extends BelongsToMany
         $relationName = null,
         $inverse = false
     ) {
-        $this->inverse = $inverse;
-        $this->morphType = $name . '_type';
-        $this->morphClass = $inverse ? $query->getModel()->getMorphClass() : $parent->getMorphClass();
-
+        // dd($name);
+        $this->inverse      = $inverse;
+        $this->morphType    = $name . '_type';
+        $this->morphClass   = $inverse ? $query->getModel()->getMorphClass() : $parent->getMorphClass();
+        // dd($foreignPivotKey);
+        // todo: fix this;
+        // $foreignPivotKey = 'laballabled';
         parent::__construct(
             $query,
             $parent,
@@ -72,6 +60,53 @@ class MorphToMany extends BelongsToMany
             $relatedKey,
             $relationName
         );
+    }
+
+    /**
+     * Attach a model to the parent.
+     *
+     * @param  mixed  $id
+     * @param  array  $attributes
+     * @param  bool  $touch
+     * @return void
+     */
+    public function attach($id, array $attributes = [], $touch = true)
+    {
+        
+        if ($id instanceof Model) {
+            $model = $id;
+
+            $id = $model->getKey();
+
+            // Attach the new parent id to the related model.
+            $model->push($this->table, [
+                $this->foreignPivotKey => $this->parent->getKey(),
+                $this->morphType => $model instanceof Model ? $model->getMorphClass() : null
+            ], true);
+
+        } else {
+            if ($id instanceof Collection) {
+                $id = $id->modelKeys();
+            }
+
+            $query = $this->newRelatedQuery();
+
+            $query->whereIn($this->related->getKeyName(), (array) $id);
+
+            // Attach the new parent id to the related model.
+            $query->push($this->foreignPivotKey, [
+                $this->foreignPivotKey => $this->parent->getKey(),
+                $this->morphType => $model instanceof Model ? $model->getMorphClass() : null
+            ], true);
+        }
+
+        // Attach the new ids to the parent model.
+        $this->parent->push($this->getRelatedKey(), (array) $id, true);
+
+        if ($touch) {
+            $this->touchIfTouching();
+        }
+       
     }
 
     /**
@@ -155,6 +190,7 @@ class MorphToMany extends BelongsToMany
      */
     public function newPivotQuery()
     {
+        dd("newPivotQuery");
         return parent::newPivotQuery()->where($this->morphType, $this->morphClass);
     }
 
@@ -167,6 +203,8 @@ class MorphToMany extends BelongsToMany
      */
     public function newPivot(array $attributes = [], $exists = false)
     {
+        dd("newPivot");
+
         $using = $this->using;
 
         $pivot = $using ? $using::fromRawAttributes($this->parent, $attributes, $this->table, $exists)

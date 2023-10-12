@@ -15,8 +15,14 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use MongoDB\Laravel\Eloquent\Builder;
 use MongoDB\Laravel\Eloquent\HybridRelations;
+use MongoDB\Laravel\Relations\MorphToMany;
+// use Illuminate\Database\Eloquent\Relations\MorphToMany;
+
+
 use MongoDB\Laravel\Eloquent\MassPrunable;
 use MongoDB\Laravel\Eloquent\Model as Eloquent;
+use MongoDB\Laravel\Tests\Models\Book;
+
 
 /**
  * @property string $_id
@@ -43,6 +49,16 @@ class User extends Eloquent implements AuthenticatableContract, CanResetPassword
         'birthday' => 'datetime',
         'entry.date' => 'datetime',
         'member_status' => MemberStatus::class,
+    ];
+
+    protected $fillable = [
+        'name',
+        'email',
+        'title',
+        'age',
+        'birthday',
+        'username',
+        'member_status',
     ];
     protected static $unguarded = true;
 
@@ -112,5 +128,11 @@ class User extends Eloquent implements AuthenticatableContract, CanResetPassword
     public function prunable(): Builder
     {
         return $this->where('age', '>', 18);
+    }
+
+    // labels
+    public function labels()
+    {
+        return $this->morphToMany(Label::class, 'labelled');
     }
 }
