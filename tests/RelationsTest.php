@@ -435,7 +435,11 @@ class RelationsTest extends TestCase
 
         // check detaching
         $user->labels()->detach($label);
-        $client->labels()->detach($label);
+        $this->assertNotContains($label->_id, $user->fresh()->labels->pluck('_id')->toArray());
+
+        // check if label still connected to client
+        $this->assertEquals($label->id, $client->fresh()->labels->first()->id);
+
     }
 
     public function testHasManyHas(): void

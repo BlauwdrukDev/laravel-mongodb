@@ -101,6 +101,43 @@ class MorphToMany extends BelongsToMany
         }
     }
 
+    /** @inheritdoc */
+    public function detach($ids = [], $touch = true)
+    {
+        if ($ids instanceof Model) {
+            $ids = (array) $ids->getKey();
+        }
+
+        $query = $this->newRelatedQuery();
+
+        // If associated IDs were passed to the method we will only delete those
+        // associations, otherwise all of the association ties will be broken.
+        // We'll return the numbers of affected rows when we do the deletes.
+        $ids = (array) $ids;
+
+        // Detach all ids from the parent model.
+        $this->parent->pull($this->relatedPivotKey, $ids);
+
+        // Prepare the query to select all related objects.
+        if (count($ids) > 0) {
+            $query->whereIn($this->related->getKeyName(), $ids);
+        }
+
+        // Remove the relation to the parent.
+        // $query->pull($this->foreignPivotKey, $this->foreignPivotKey, $this->parent->getKey());
+        $query->pull($this->table, [
+            $this->foreignPivotKey => $this->parent->getKey(),
+            $this->morphType => $this->parent instanceof Model ? $this->parent->getMorphClass() : null,
+        ]);
+
+        if ($touch) {
+            $this->touchIfTouching();
+        }
+
+        return count($ids);
+    }
+
+
     /**
      * Get the foreign key "type" name.
      *
