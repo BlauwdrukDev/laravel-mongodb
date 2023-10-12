@@ -87,7 +87,7 @@ class MorphToMany extends BelongsToMany
             $query->whereIn($this->related->getKeyName(), (array) $id);
 
             // Attach the new parent id to the related model.
-            $query->push($this->foreignPivotKey, [
+            $query->push($this->table, [
                 $this->foreignPivotKey => $this->parent->getKey(),
                 $this->morphType => $this->parent instanceof Model ? $this->parent->getMorphClass() : null,
             ], true);

@@ -397,17 +397,18 @@ class RelationsTest extends TestCase
         $relations = $photos[1]->getRelations();
         $this->assertArrayHasKey('hasImage', $relations);
         $this->assertInstanceOf(Client::class, $photos[1]->hasImage);
-        // die("test");
     }
 
     public function testMorphToMany(): void
     {
+
         // cerate user
         $user = User::updateOrCreate(['name' => 'John Doe']);
         // create client
         $client = Client::updateOrCreate(['name' => 'Jane Doe']);
         // create label
-        $label = Label::updateOrCreate(['name' => 'My test label']);
+        $label  = Label::updateOrCreate(['name' => 'My test label']);
+        $label2 = Label::updateOrCreate(['name' => 'My test label 2']);
 
         // check attach
 
@@ -440,6 +441,9 @@ class RelationsTest extends TestCase
         // check if label still connected to client
         $this->assertEquals($label->id, $client->fresh()->labels->first()->id);
 
+        // check sync
+        $user->labels()->sync([$label->_id, $label2->_id]);
+        $this->assertCount(2, $user->fresh()->labels);
     }
 
     public function testHasManyHas(): void
