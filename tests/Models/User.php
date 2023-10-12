@@ -15,14 +15,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use MongoDB\Laravel\Eloquent\Builder;
 use MongoDB\Laravel\Eloquent\HybridRelations;
-use MongoDB\Laravel\Relations\MorphToMany;
-// use Illuminate\Database\Eloquent\Relations\MorphToMany;
-
-
 use MongoDB\Laravel\Eloquent\MassPrunable;
 use MongoDB\Laravel\Eloquent\Model as Eloquent;
-use MongoDB\Laravel\Tests\Models\Book;
-
 
 /**
  * @property string $_id
@@ -44,14 +38,14 @@ class User extends Eloquent implements AuthenticatableContract, CanResetPassword
     use Notifiable;
     use MassPrunable;
 
-    protected $connection       = 'mongodb';
-    protected $casts            = [
+    protected $connection = 'mongodb';
+    protected $casts      = [
         'birthday' => 'datetime',
         'entry.date' => 'datetime',
         'member_status' => MemberStatus::class,
     ];
 
-    protected $fillable = [
+    protected $fillable         = [
         'name',
         'email',
         'title',

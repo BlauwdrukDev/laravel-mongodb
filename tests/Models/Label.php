@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace MongoDB\Laravel\Tests\Models;
 
+use MongoDB\Laravel\Eloquent\Model as Eloquent;
 // use Illuminate\Database\Eloquent\Relations\MorphToMany;
 // use Illuminate\Database\Eloquent\Relations\MorphByMany;
-use MongoDB\Laravel\Relations\MorphToMany;
-
-use MongoDB\Laravel\Eloquent\Model as Eloquent;
 
 /**
  * @property string $title
@@ -21,12 +19,12 @@ class Label extends Eloquent
     protected $collection       = 'labels';
     protected static $unguarded = true;
 
-
     protected $fillable = [
         'name',
         'author',
         'chapters',
     ];
+
     /**
      * Get all of the posts that are assigned this tag.
      */

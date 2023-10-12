@@ -392,22 +392,23 @@ trait HybridRelations
             $parentKey ?: $this->getKeyName(),
             $relatedKey ?: $instance->getKeyName(),
             $caller,
-            $inverse
+            $inverse,
         );
     }
 
     /**
      * Define a polymorphic, inverse many-to-many relationship.
      *
-     * @param  string  $related
-     * @param  string  $name
-     * @param  string|null  $table
-     * @param  string|null  $foreignPivotKey
-     * @param  string|null  $relatedPivotKey
-     * @param  string|null  $parentKey
-     * @param  string|null  $relatedKey
-     * @param  string|null  $relation
-     * @param  bool  $inverse
+     * @param  string      $related
+     * @param  string      $name
+     * @param  string|null $table
+     * @param  string|null $foreignPivotKey
+     * @param  string|null $relatedPivotKey
+     * @param  string|null $parentKey
+     * @param  string|null $relatedKey
+     * @param  string|null $relation
+     * @param  bool        $inverse
+     *
      * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
     public function morphedByMany(
@@ -438,10 +439,10 @@ trait HybridRelations
             $relatedPivotKey,
             $parentKey,
             $relatedKey,
-            true
+            null,
+            true,
         );
     }
-
 
     /**
      * Get the relationship name of the belongs to many.
